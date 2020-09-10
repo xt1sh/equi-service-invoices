@@ -1,0 +1,67 @@
+table {
+  margin-top: 10px;
+  width: 1000px;
+}
+
+td, th {
+  border: 1px solid black;
+  text-align: left;
+  padding: 8px;
+}
+
+tr {
+  line-height: 4px;
+}
+
+.center {
+  display: flex;
+  justify-content: center;
+}
+
+.invoice {
+  margin: 50px 0 20px 0;
+}
+
+.constructor {
+  padding-top: 30px;
+}
+
+.constructor-info {
+  display: flex;
+  align-items: baseline;
+  margin-bottom: 50px;
+}
+
+.info-field {
+  margin-right: 30px;
+}
+
+.constructor-products {
+  margin-bottom: 30px;
+}
+
+.constructor-product {
+  padding: 10px 0;
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  border-top: 1px solid gray;
+  border-bottom: 1px solid gray;
+}
+
+.button-wrapper {
+  margin: 10px;
+}
+
+.span-header {
+  text-decoration: underline;
+}
+
+.span-value {
+  position: absolute;
+  left: 30%;
+}
+
+.empty {
+  border: none;
+}

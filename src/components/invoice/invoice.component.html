@@ -1,0 +1,153 @@
+<div id="pdfIgnore" class="constructor">
+  <h2>Накладна</h2>
+  <form [formGroup]="form" (ngSubmit)="onSubmit()">
+    <div class="constructor-info">
+      <div class="info-field">
+        <mat-form-field>
+          <mat-label>Одержувач</mat-label>
+          <input matInput placeholder="Одержувач" formControlName="client" autocomplete="off" type="text" required>
+          <mat-error *ngIf="form.controls.client.hasError('required')">
+            Одержувач <strong>не може бути порожнім</strong>
+          </mat-error>
+        </mat-form-field>
+      </div>
+      <div class="info-field">
+        <mat-form-field>
+          <mat-label>Дата відправки</mat-label>
+          <input matInput [matDatepicker]="picker" placeholder="Дата відправки" formControlName="date" required>
+          <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
+          <mat-error *ngIf="form.controls.date.hasError('required')">
+            Дата відправки <strong>не може бути порожньою</strong>
+          </mat-error>
+        </mat-form-field>
+      </div>
+      <div class="info-field">
+        <mat-form-field>
+          <mat-label>Номер накладної</mat-label>
+          <input matInput placeholder="Номер накладної" formControlName="number" autocomplete="off" type="text">
+        </mat-form-field>
+      </div>
+    </div>
+    <div formGroupName="products" class="constructor-products">
+      <div *ngFor="let product of products.controls; let i = index" [formGroup]="product" class="constructor-product">
+        <div class="info-field">
+          <mat-form-field>
+            <mat-label>Назва товару</mat-label>
+            <input matInput placeholder="Назва товару" formControlName="name" autocomplete="off" type="text" required>
+          </mat-form-field>
+        </div>
+        <div class="info-field">
+          <mat-form-field>
+            <mat-label>Одиниці виміру</mat-label>
+            <mat-select formControlName="unitsOfMeasure" matNativeControl required>
+              <mat-option value="шт">шт</mat-option>
+              <mat-option value="пара">пара</mat-option>
+              <mat-option value="стан">стан</mat-option>
+              <mat-option value="б">б</mat-option>
+              <mat-option value="л">л</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+        <div class="info-field">
+          <mat-form-field>
+            <mat-label>Кількість</mat-label>
+            <input matInput placeholder="Кількість" formControlName="quantity" autocomplete="off" type="number" required>
+          </mat-form-field>
+        </div>
+        <div class="info-field">
+          <mat-form-field>
+            <mat-label>Ціна</mat-label>
+            <input matInput placeholder="Ціна" formControlName="price" autocomplete="off" type="number" required>
+          </mat-form-field>
+        </div>
+        <button (click)="removeProduct(i)" mat-raised-button color="warn" type="button">Видалити</button>
+      </div>
+      <div class="button-wrapper">
+        <button (click)="addProduct()" mat-raised-button color="primary" type="button">Додати новий продукт</button>
+      </div>
+    </div>
+    <div class="button-wrapper">
+      <button type="submit" mat-raised-button color="primary">Сгенерувати</button>
+    </div>
+    <div class="button-wrapper">
+      <button mat-raised-button color="primary" type="button" printSectionId="print-section" ngxPrint [disabled]="!value" [useExistingCss]="true">Роздрукувати</button>
+    </div>
+  </form>
+</div>
+<div *ngIf="value" id="print-section" class="invoice">
+  <div>
+    <div>
+      <span class="span-header">
+        Постачальник:
+      </span>
+      <span class="span-value">
+        {{ provider }}
+      </span>
+    </div>
+    <div>
+      <span class="span-header">
+        Одержувач:
+      </span>
+      <span class="span-value">
+        {{ value.client }}
+      </span>
+    </div>
+  </div>
+  <div class="center">
+    <h2>
+      Видаткова накладна № {{ value.number }} від {{ value.date | date: "dd.MM.yyyy" }}
+    </h2>
+  </div>
+  <table>
+    <tr>
+      <th>
+        №
+      </th>
+      <th>
+        Товар
+      </th>
+      <th>
+        Од.
+      </th>
+      <th>
+        К-сть
+      </th>
+      <th>
+        Ціна
+      </th>
+      <th>
+        Сума
+      </th>
+    </tr>
+    <tr *ngFor="let row of value.products; let i = index">
+      <td [width]="10">
+        {{ i + 1 }}
+      </td>
+      <td [width]="500">
+        {{ row.name }}
+      </td>
+      <td [width]="20">
+        {{ row.unitsOfMeasure }}
+      </td>
+      <td [width]="70">
+        {{ row.quantity }}
+      </td>
+      <td>
+        {{ row.price }}
+      </td>
+      <td>
+        {{ row.price * row.quantity }}
+      </td>
+    </tr>
+    <tr>
+      <td class="empty"></td><td class="empty"></td><td class="empty"></td><td class="empty"></td>
+      <td>
+        Всього
+      </td>
+      <td>
+        {{ getTotalPrice() }}
+      </td>
+    </tr>
+  </table>
+</div>

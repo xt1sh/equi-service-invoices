@@ -6,6 +6,11 @@
 */
 {
   "files": [],
+  "compilerOptions": {
+    "module": "commonjs",
+    "resolveJsonModule": true,
+    "esModuleInterop": true
+  },
   "references": [
     {
       "path": "./tsconfig.app.json"
