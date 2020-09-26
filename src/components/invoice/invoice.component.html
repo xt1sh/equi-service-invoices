@@ -134,10 +134,10 @@
         {{ row.quantity }}
       </td>
       <td>
-        {{ row.price }}
+        {{ row.price | number: '1.2' }}
       </td>
       <td>
-        {{ row.price * row.quantity }}
+        {{ (row.price * row.quantity) | number: '1.2' }}
       </td>
     </tr>
     <tr>
