@@ -67,6 +67,12 @@
         <button (click)="addProduct()" mat-raised-button color="primary" type="button">Додати новий продукт</button>
       </div>
     </div>
+    <div class="info-field">
+      <mat-form-field>
+        <mat-label>Знижка, %</mat-label>
+        <input matInput placeholder="Знижка" formControlName="discount" autocomplete="off" type="number" required>
+      </mat-form-field>
+    </div>
     <div class="button-wrapper">
       <button type="submit" mat-raised-button color="primary">Сгенерувати</button>
     </div>
@@ -147,6 +153,24 @@
       </td>
       <td>
         {{ getTotalPrice() | number: '1.2' }}
+      </td>
+    </tr>
+    <tr *ngIf="value.discount > 0">
+      <td class="empty"></td><td class="empty"></td><td class="empty"></td><td class="empty"></td>
+      <td>
+        Знижка
+      </td>
+      <td>
+        {{ value.discount }}%
+      </td>
+    </tr>
+    <tr *ngIf="value.discount > 0">
+      <td class="empty"></td><td class="empty"></td><td class="empty"></td><td class="empty"></td>
+      <td>
+        Всього
+      </td>
+      <td>
+        {{ (getTotalPrice() * (100 - value.discount) / 100) | number: '1.2' }}
       </td>
     </tr>
   </table>

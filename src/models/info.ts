@@ -4,5 +4,6 @@ export interface Info {
   client: string;
   number: string;
   date: Date;
+  discount: number;
   products: Product[];
 }

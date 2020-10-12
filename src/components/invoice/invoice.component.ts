@@ -29,6 +29,7 @@ export class InvoiceComponent implements OnInit {
       client: ['', Validators.required],
       date: [new Date().toISOString().slice(0, -1), Validators.required],
       number: [''],
+      discount: 0,
       products: this.products
     });
   }
