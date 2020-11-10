@@ -9,7 +9,6 @@ import { FormBuilder, FormGroup, Validators, FormArray } from '@angular/forms';
 })
 export class InvoiceComponent implements OnInit {
 
-  provider: string;
   form: FormGroup;
   products: FormArray;
   value: Info;
@@ -17,7 +16,6 @@ export class InvoiceComponent implements OnInit {
   constructor(private fb: FormBuilder) { }
 
   ngOnInit() {
-    this.provider = 'ФОП Прокопюк І.В.';
     this.products = this.fb.array([this.fb.group({
         name: ['', Validators.required],
         unitsOfMeasure: ['шт', Validators.required],
@@ -26,6 +24,7 @@ export class InvoiceComponent implements OnInit {
       })
     ]);
     this.form = this.fb.group({
+      provider: ['ФОП Прокопюк І.В.', Validators.required],
       client: ['', Validators.required],
       date: [new Date().toISOString().slice(0, -1), Validators.required],
       number: [''],

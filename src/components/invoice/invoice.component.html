@@ -13,6 +13,17 @@
       </div>
       <div class="info-field">
         <mat-form-field>
+          <mat-label>Постачальник</mat-label>
+          <mat-select formControlName="provider" matNativeControl required>
+            <mat-option value="ФОП Прокопюк І.В.">ФОП Прокопюк І.В.</mat-option>
+            <mat-option value="ФОП Настенко Н.В.">ФОП Настенко Н.В.</mat-option>
+            <mat-option value="ФОП Лущай І.О.">ФОП Лущай І.О.</mat-option>
+            <mat-option value='ПП "Еквi-Сервiс"'>ПП "Еквi-Сервiс"</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="info-field">
+        <mat-form-field>
           <mat-label>Дата відправки</mat-label>
           <input matInput [matDatepicker]="picker" placeholder="Дата відправки" formControlName="date" required>
           <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
@@ -46,6 +57,8 @@
               <mat-option value="стан">стан</mat-option>
               <mat-option value="б">б</mat-option>
               <mat-option value="л">л</mat-option>
+              <mat-option value="м">м</mat-option>
+              <mat-option value="к">к</mat-option>
             </mat-select>
           </mat-form-field>
         </div>
@@ -88,7 +101,7 @@
         Постачальник:
       </span>
       <span class="span-value">
-        {{ provider }}
+        {{ value.provider }}
       </span>
     </div>
     <div>
