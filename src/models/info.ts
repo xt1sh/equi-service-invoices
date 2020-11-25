@@ -5,5 +5,7 @@ export interface Info {
   number: string;
   date: Date;
   discount: number;
+  returnDiscount: number;
   products: Product[];
+  returnProducts: Product[];
 }

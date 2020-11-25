@@ -86,6 +86,60 @@
         <input matInput placeholder="Знижка" formControlName="discount" autocomplete="off" type="number" required>
       </mat-form-field>
     </div>
+    <div class="info-field">
+        <mat-checkbox matInput (change)="hasReturn = $event.checked">
+          Повернення
+        </mat-checkbox>
+    </div>
+    <div class="return-container" *ngIf="hasReturn">
+      <h2>Повернення</h2>
+      <div class="info-field">
+        <mat-form-field>
+          <mat-label>Знижка, %</mat-label>
+          <input matInput placeholder="Знижка" formControlName="returnDiscount" autocomplete="off" type="number" required>
+        </mat-form-field>
+      </div>
+      <div formGroupName="returnProducts" class="constructor-products">
+        <div *ngFor="let product of returnProducts.controls; let i = index" [formGroup]="product" class="constructor-product">
+          <div class="info-field">
+            <mat-form-field>
+              <mat-label>Назва товару</mat-label>
+              <input matInput placeholder="Назва товару" formControlName="name" autocomplete="off" type="text" required>
+            </mat-form-field>
+          </div>
+          <div class="info-field">
+            <mat-form-field>
+              <mat-label>Одиниці виміру</mat-label>
+              <mat-select formControlName="unitsOfMeasure" matNativeControl required>
+                <mat-option value="шт">шт</mat-option>
+                <mat-option value="пара">пара</mat-option>
+                <mat-option value="стан">стан</mat-option>
+                <mat-option value="б">б</mat-option>
+                <mat-option value="л">л</mat-option>
+                <mat-option value="м">м</mat-option>
+                <mat-option value="к">к</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+          <div class="info-field">
+            <mat-form-field>
+              <mat-label>Кількість</mat-label>
+              <input matInput placeholder="Кількість" formControlName="quantity" autocomplete="off" type="number" required>
+            </mat-form-field>
+          </div>
+          <div class="info-field">
+            <mat-form-field>
+              <mat-label>Ціна</mat-label>
+              <input matInput placeholder="Ціна" formControlName="price" autocomplete="off" type="number" required>
+            </mat-form-field>
+          </div>
+          <button (click)="removeReturnProduct(i)" mat-raised-button color="warn" type="button">Видалити</button>
+        </div>
+        <div class="button-wrapper">
+          <button (click)="addReturnProduct()" mat-raised-button color="primary" type="button">Додати новий продукт</button>
+        </div>
+      </div>
+    </div>
     <div class="button-wrapper">
       <button type="submit" mat-raised-button color="primary">Сгенерувати</button>
     </div>
@@ -183,8 +237,90 @@
         Всього
       </td>
       <td>
-        {{ (getTotalPrice() * (100 - value.discount) / 100) | number: '1.2' }}
+        {{ getTotalPriceWithDiscount() | number: '1.2' }}
       </td>
     </tr>
   </table>
+  <div class="generated-return">
+    <div class="center">
+      <h2>
+        Повернення
+      </h2>
+    </div>
+    <table>
+      <tr>
+        <th>
+          №
+        </th>
+        <th>
+          Товар
+        </th>
+        <th>
+          Од.
+        </th>
+        <th>
+          К-сть
+        </th>
+        <th>
+          Ціна
+        </th>
+        <th>
+          Сума
+        </th>
+      </tr>
+      <tr *ngFor="let row of value.returnProducts; let i = index">
+        <td [width]="10">
+          {{ i + 1 }}
+        </td>
+        <td [width]="500">
+          {{ row.name }}
+        </td>
+        <td [width]="20">
+          {{ row.unitsOfMeasure }}
+        </td>
+        <td [width]="70">
+          {{ row.quantity }}
+        </td>
+        <td>
+          {{ row.price | number: '1.2' }}
+        </td>
+        <td>
+          {{ (row.price * row.quantity) | number: '1.2' }}
+        </td>
+      </tr>
+      <tr>
+        <td class="empty"></td><td class="empty"></td><td class="empty"></td><td class="empty"></td>
+        <td>
+          Всього
+        </td>
+        <td>
+          {{ getTotalReturnPrice() | number: '1.2' }}
+        </td>
+      </tr>
+      <tr *ngIf="value.returnDiscount > 0">
+        <td class="empty"></td><td class="empty"></td><td class="empty"></td><td class="empty"></td>
+        <td>
+          Знижка
+        </td>
+        <td>
+          {{ value.returnDiscount }}%
+        </td>
+      </tr>
+      <tr *ngIf="value.returnDiscount > 0">
+        <td class="empty"></td><td class="empty"></td><td class="empty"></td><td class="empty"></td>
+        <td>
+          Всього
+        </td>
+        <td>
+          {{ getTotalReturnPriceWithDiscount() | number: '1.2' }}
+        </td>
+      </tr>
+    </table>
+  </div>
+  <span class="total-price">
+    Всього
+  </span>
+  <span class="total-price">
+    {{ getTotalPriceWithDiscount() - getTotalReturnPriceWithDiscount() | number: '1.2' }} грн
+  </span>
 </div>
