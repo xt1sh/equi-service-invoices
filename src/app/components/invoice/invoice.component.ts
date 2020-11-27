@@ -1,3 +1,4 @@
+import { Product } from './../../../models/product';
 import { ProviderInfo } from './../../../models/provider-info';
 import { FirestoreService } from './../../services/firestore.service';
 import { NotificationService } from './../../services/notification.service';
@@ -6,6 +7,8 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, FormArray } from '@angular/forms';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { Subscription } from 'rxjs';
+import Fuse from 'fuse.js';
+import { throwIfEmpty } from 'rxjs/operators';
 
 @Component({
   selector: 'app-invoice',
@@ -20,6 +23,9 @@ export class InvoiceComponent implements OnInit, OnDestroy {
   value: Info;
   hasReturn: boolean;
   providersInfo: ProviderInfo[];
+  existingProducts: Product[];
+  filteredProducts: Product[];
+  fuse: Fuse<Product>;
 
   private subscription: Subscription;
 
@@ -28,9 +34,19 @@ export class InvoiceComponent implements OnInit, OnDestroy {
     private firestoreService: FirestoreService) { }
 
   ngOnInit() {
+    this.notificationService.changeLoading(true);
+
     this.subscription = new Subscription();
     this.providersInfo = [];
-    this.notificationService.changeLoading(true);
+    this.existingProducts = [];
+    this.filteredProducts = [];
+
+    let productsSub = this.firestoreService.getAllProducts().subscribe(products => {
+      this.existingProducts = products;
+      this.initializeFuse();
+    });
+    this.subscription.add(productsSub);
+
     this.initializeForm();
     let counterCollection = this.firestoreService.getInvoiceCounterCollection();
 
@@ -43,13 +59,17 @@ export class InvoiceComponent implements OnInit, OnDestroy {
     });
     this.subscription.add(fireStoreListenerSub);
 
-    let productsSub = this.firestoreService.getAllProducts().subscribe(console.log)
-    this.subscription.add(productsSub);
     this.hasReturn = false;
   }
 
   ngOnDestroy() {
     this.subscription.unsubscribe();
+  }
+
+  initializeFuse() {
+    this.fuse = new Fuse(this.existingProducts, {
+      keys: ['name']
+    });
   }
 
   initializeForm() {
@@ -140,7 +160,52 @@ export class InvoiceComponent implements OnInit, OnDestroy {
   }
 
   saveProducts() {
+    let addedProducts = this.products.value as Product[];
+    let productsToChange: Product[] = [];
+    let productsToAdd: Product[] = [];
+    addedProducts.forEach(product => {
+      let existingProduct = this.existingProducts.find(p => p.name === product.name);
+      if (existingProduct) {
+        if (existingProduct.price !== product.price || existingProduct.unitsOfMeasure !== product.unitsOfMeasure) {
+          productsToChange.push(product);
+          existingProduct = product;
+          this.initializeFuse();
+        }
+      } else {
+        productsToAdd.push(product);
+        this.existingProducts.push(product);
+        this.initializeFuse();
+      }
+    });
+    if (productsToAdd.length) {
+      this.firestoreService.saveNewProducts(productsToAdd);
+    }
+    if (productsToChange.length) {
+      this.firestoreService.updateProducts(productsToChange);
+    }
+  }
 
+  onNameChange(e: string, product: FormGroup) {
+    if (e && product) {
+      this.filteredProducts = this.fuse.search(e).map(item => item.item);
+      let value = product.value as Product;
+      let foundProduct = this.existingProducts.find(p => p.name.toUpperCase() === value.name.toUpperCase());
+      if (foundProduct) {
+        product.get('unitsOfMeasure').setValue(foundProduct.unitsOfMeasure);
+        product.get('price').setValue(foundProduct.price);
+      }
+    } else {
+      this.filteredProducts = [];
+    }
+  }
+
+  onDelete(name: string) {
+    let index = this.existingProducts.findIndex(p => p.name === name);
+    this.existingProducts.splice(index, 1);
+    index = this.filteredProducts.findIndex(p => p.name === name);
+    this.filteredProducts.splice(index, 1);
+    this.initializeFuse();
+    this.firestoreService.deleteProduct(name);
   }
 
   onSubmit() {
@@ -152,11 +217,14 @@ export class InvoiceComponent implements OnInit, OnDestroy {
           count: number
         }).then();
       });
+    this.saveProducts();
   }
 
   onCancel() {
     this.hasReturn = false;
     this.initializeForm();
+    this.filteredProducts = [];
+    this.initializeFuse();
     this.setCount();
   }
 

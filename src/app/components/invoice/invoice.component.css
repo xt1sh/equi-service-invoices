@@ -13,6 +13,10 @@ tr {
   line-height: 4px;
 }
 
+p {
+  margin: 0;
+}
+
 .center {
   display: flex;
   justify-content: center;
@@ -78,4 +82,29 @@ tr {
 .total-price {
   font-size: 24px;
   margin-right: 30px;
+}
+
+.autocomplete-field {
+  display: flex;
+  justify-content: space-between;
+}
+
+.autocomplete-field-text {
+  line-height: 41px;
+}
+
+.autocomplete-field-button {
+  line-height: 46px;
+}
+
+.name-field {
+  min-width: 450px;
+}
+
+.client-name-field {
+  min-width: 349px;
+}
+
+.small-field {
+  max-width: 80px;
 }

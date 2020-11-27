@@ -3,7 +3,7 @@
   <form [formGroup]="form" (ngSubmit)="onSubmit()">
     <div class="constructor-info">
       <div class="info-field">
-        <mat-form-field>
+        <mat-form-field class="client-name-field">
           <mat-label>Одержувач</mat-label>
           <input matInput placeholder="Одержувач" formControlName="client" autocomplete="off" type="text" required>
           <mat-error *ngIf="form.controls.client.hasError('required')">
@@ -34,7 +34,7 @@
         </mat-form-field>
       </div>
       <div class="info-field">
-        <mat-form-field>
+        <mat-form-field class="small-field">
           <mat-label>Номер накладної</mat-label>
           <input matInput placeholder="Номер накладної" formControlName="number" autocomplete="off" type="number">
         </mat-form-field>
@@ -43,13 +43,27 @@
     <div formGroupName="products" class="constructor-products">
       <div *ngFor="let product of products.controls; let i = index" [formGroup]="product" class="constructor-product">
         <div class="info-field">
-          <mat-form-field>
+          <mat-form-field class="name-field">
             <mat-label>Назва товару</mat-label>
-            <input matInput placeholder="Назва товару" formControlName="name" autocomplete="off" type="text" required>
+            <input matInput placeholder="Назва товару" formControlName="name" (ngModelChange)="onNameChange($event, product)" autocomplete="off" type="text" [matAutocomplete]="auto" required>
+            <mat-autocomplete #auto="matAutocomplete">
+              <div class="autocomplete-field" *ngFor="let option of filteredProducts">
+                <mat-option [value]="option.name">
+                  <div>
+                    <p class="autocomplete-field-text">
+                      {{ option.name }}
+                    </p>
+                  </div>
+                </mat-option>
+                <button (click)="onDelete(option.name)" class="autocomplete-field-button" mat-icon-button>
+                  <mat-icon>close</mat-icon>
+                </button>
+              </div>
+            </mat-autocomplete>
           </mat-form-field>
         </div>
         <div class="info-field">
-          <mat-form-field>
+          <mat-form-field class="small-field">
             <mat-label>Одиниці виміру</mat-label>
             <mat-select formControlName="unitsOfMeasure" matNativeControl required>
               <mat-option value="шт">шт</mat-option>
@@ -63,13 +77,13 @@
           </mat-form-field>
         </div>
         <div class="info-field">
-          <mat-form-field>
+          <mat-form-field class="small-field">
             <mat-label>Кількість</mat-label>
             <input matInput placeholder="Кількість" formControlName="quantity" autocomplete="off" type="number" required>
           </mat-form-field>
         </div>
         <div class="info-field">
-          <mat-form-field>
+          <mat-form-field class="small-field">
             <mat-label>Ціна</mat-label>
             <input matInput placeholder="Ціна" formControlName="price" autocomplete="off" type="number" required>
           </mat-form-field>
@@ -102,13 +116,27 @@
       <div formGroupName="returnProducts" class="constructor-products">
         <div *ngFor="let product of returnProducts.controls; let i = index" [formGroup]="product" class="constructor-product">
           <div class="info-field">
-            <mat-form-field>
+            <mat-form-field class="name-field">
               <mat-label>Назва товару</mat-label>
-              <input matInput placeholder="Назва товару" formControlName="name" autocomplete="off" type="text" required>
+              <input matInput placeholder="Назва товару" formControlName="name" (ngModelChange)="onNameChange($event, product)" autocomplete="off" type="text" [matAutocomplete]="auto" required>
+              <mat-autocomplete #auto="matAutocomplete">
+                <div class="autocomplete-field" *ngFor="let option of filteredProducts">
+                  <mat-option [value]="option.name">
+                    <div>
+                      <p class="autocomplete-field-text">
+                        {{ option.name }}
+                      </p>
+                    </div>
+                  </mat-option>
+                  <button (click)="onDelete(option.name)" class="autocomplete-field-button" mat-button>
+                    <mat-icon>close</mat-icon>
+                  </button>
+                </div>
+              </mat-autocomplete>
             </mat-form-field>
           </div>
           <div class="info-field">
-            <mat-form-field>
+            <mat-form-field class="small-field">
               <mat-label>Одиниці виміру</mat-label>
               <mat-select formControlName="unitsOfMeasure" matNativeControl required>
                 <mat-option value="шт">шт</mat-option>
@@ -122,13 +150,13 @@
             </mat-form-field>
           </div>
           <div class="info-field">
-            <mat-form-field>
+            <mat-form-field class="small-field">
               <mat-label>Кількість</mat-label>
               <input matInput placeholder="Кількість" formControlName="quantity" autocomplete="off" type="number" required>
             </mat-form-field>
           </div>
           <div class="info-field">
-            <mat-form-field>
+            <mat-form-field class="small-field">
               <mat-label>Ціна</mat-label>
               <input matInput placeholder="Ціна" formControlName="price" autocomplete="off" type="number" required>
             </mat-form-field>

@@ -18,6 +18,8 @@ import { NgxPrintModule } from 'ngx-print';
 import { environment } from 'src/environments/environment';
 import { AngularFireModule } from "@angular/fire";
 import { AngularFirestoreModule } from "@angular/fire/firestore";
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatIconModule } from '@angular/material/icon';
 @NgModule({
   declarations: [
     AppComponent,
@@ -38,7 +40,9 @@ import { AngularFirestoreModule } from "@angular/fire/firestore";
     MatButtonModule,
     MatSelectModule,
     MatCheckboxModule,
+    MatAutocompleteModule,
     MatProgressSpinnerModule,
+    MatIconModule,
     NgxPrintModule
   ],
   providers: [],
