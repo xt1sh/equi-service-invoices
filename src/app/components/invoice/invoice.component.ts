@@ -146,12 +146,12 @@ export class InvoiceComponent implements OnInit, OnDestroy {
   onSubmit() {
     this.value = this.form.value as Info;
     let number = this.value.number + 1;
-    // this.firestoreService.getInvoiceCounterCollection(ref => ref.where('provider', '==', this.value.provider)).get()
-    //   .subscribe(sn => {
-    //     sn.docs[0].ref.update({
-    //       count: number
-    //     }).then();
-    //   });
+    this.firestoreService.getInvoiceCounterCollection(ref => ref.where('provider', '==', this.value.provider)).get()
+      .subscribe(sn => {
+        sn.docs[0].ref.update({
+          count: number
+        }).then();
+      });
   }
 
   onCancel() {
