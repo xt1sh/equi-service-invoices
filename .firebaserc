@@ -1,0 +1,11 @@
+{
+  "targets": {
+    "invoice-generator-784da": {
+      "hosting": {
+        "invoice-generator": [
+          "invoice-generator-784da"
+        ]
+      }
+    }
+  }
+}

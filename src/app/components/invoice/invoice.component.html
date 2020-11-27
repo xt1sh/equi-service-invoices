@@ -14,7 +14,7 @@
       <div class="info-field">
         <mat-form-field>
           <mat-label>Постачальник</mat-label>
-          <mat-select formControlName="provider" matNativeControl required>
+          <mat-select formControlName="provider" (selectionChange)="setCount()" matNativeControl required>
             <mat-option value="ФОП Прокопюк І.В.">ФОП Прокопюк І.В.</mat-option>
             <mat-option value="ФОП Настенко Н.В.">ФОП Настенко Н.В.</mat-option>
             <mat-option value="ФОП Лущай І.О.">ФОП Лущай І.О.</mat-option>
@@ -36,7 +36,7 @@
       <div class="info-field">
         <mat-form-field>
           <mat-label>Номер накладної</mat-label>
-          <input matInput placeholder="Номер накладної" formControlName="number" autocomplete="off" type="text">
+          <input matInput placeholder="Номер накладної" formControlName="number" autocomplete="off" type="number">
         </mat-form-field>
       </div>
     </div>
@@ -144,6 +144,9 @@
       <button type="submit" mat-raised-button color="primary">Сгенерувати</button>
     </div>
     <div class="button-wrapper">
+      <button type="button" mat-raised-button color="warn" (click)="onCancel()">Скасувати</button>
+    </div>
+    <div class="button-wrapper">
       <button mat-raised-button color="primary" type="button" printSectionId="print-section" ngxPrint [disabled]="!value" [useExistingCss]="true">Роздрукувати</button>
     </div>
   </form>
@@ -241,7 +244,7 @@
       </td>
     </tr>
   </table>
-  <div class="generated-return">
+  <div *ngIf="hasReturn" class="generated-return">
     <div class="center">
       <h2>
         Повернення
@@ -317,10 +320,12 @@
       </tr>
     </table>
   </div>
-  <span class="total-price">
-    Всього
-  </span>
-  <span class="total-price">
-    {{ getTotalPriceWithDiscount() - getTotalReturnPriceWithDiscount() | number: '1.2' }} грн
-  </span>
+  <div *ngIf="hasReturn">
+    <span class="total-price">
+      Всього
+    </span>
+    <span class="total-price">
+      {{ getTotalPriceWithDiscount() - getTotalReturnPriceWithDiscount() | number: '1.2' }} грн
+    </span>
+  </div>
 </div>

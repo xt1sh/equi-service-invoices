@@ -1,24 +1,58 @@
-import { Info } from './../../models/info';
-import { Component, OnInit } from '@angular/core';
+import { ProviderInfo } from './../../../models/provider-info';
+import { FirestoreService } from './../../services/firestore.service';
+import { NotificationService } from './../../services/notification.service';
+import { Info } from '../../../models/info';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, FormArray } from '@angular/forms';
+import { AngularFirestore } from '@angular/fire/firestore';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-invoice',
   templateUrl: './invoice.component.html',
   styleUrls: ['./invoice.component.css']
 })
-export class InvoiceComponent implements OnInit {
+export class InvoiceComponent implements OnInit, OnDestroy {
 
   form: FormGroup;
   products: FormArray;
   returnProducts: FormArray;
   value: Info;
   hasReturn: boolean;
+  providersInfo: ProviderInfo[];
 
-  constructor(private fb: FormBuilder) { }
+  private subscription: Subscription;
+
+  constructor(private fb: FormBuilder,
+    private notificationService: NotificationService,
+    private firestoreService: FirestoreService) { }
 
   ngOnInit() {
+    this.subscription = new Subscription();
+    this.providersInfo = [];
+    this.notificationService.changeLoading(true);
+    this.initializeForm();
+    let counterCollection = this.firestoreService.getInvoiceCounterCollection();
+
+    let fireStoreListenerSub = counterCollection.snapshotChanges().subscribe(res => {
+      if (res?.length) {
+        this.providersInfo = res.map(doc => doc.payload.doc.data() as ProviderInfo);
+        this.notificationService.changeLoading(false);
+        this.setCount();
+      }
+    });
+    this.subscription.add(fireStoreListenerSub);
+
+    let productsSub = this.firestoreService.getAllProducts().subscribe(console.log)
+    this.subscription.add(productsSub);
     this.hasReturn = false;
+  }
+
+  ngOnDestroy() {
+    this.subscription.unsubscribe();
+  }
+
+  initializeForm() {
     this.products = this.fb.array([]);
     this.addProduct();
     this.returnProducts = this.fb.array([]);
@@ -27,7 +61,7 @@ export class InvoiceComponent implements OnInit {
       provider: ['ФОП Прокопюк І.В.', Validators.required],
       client: ['', Validators.required],
       date: [new Date().toISOString().slice(0, -1), Validators.required],
-      number: [''],
+      number: 0,
       discount: 0,
       returnDiscount: 0,
       products: this.products,
@@ -35,11 +69,17 @@ export class InvoiceComponent implements OnInit {
     });
   }
 
+  setCount() {
+    let provider = this.form.get('provider').value;
+    let count = this.providersInfo.find(info => info.provider === provider)?.count;
+    this.form.get('number').setValue(count);
+  }
+
   getTotalPrice(): number {
     let price = 0;
     this.value.products.forEach(p => {
       price += p.price * p.quantity;
-    })
+    });
     return price;
   }
 
@@ -47,7 +87,7 @@ export class InvoiceComponent implements OnInit {
     let price = 0;
     this.value.products.forEach(p => {
       price += p.price * p.quantity;
-    })
+    });
     let discount = this.form.value.discount;
     return price * (100 - discount) / 100;
   }
@@ -56,7 +96,7 @@ export class InvoiceComponent implements OnInit {
     let price = 0;
     this.value.returnProducts.forEach(p => {
       price += p.price * p.quantity;
-    })
+    });
     return price;
   }
 
@@ -64,7 +104,7 @@ export class InvoiceComponent implements OnInit {
     let price = 0;
     this.value.returnProducts.forEach(p => {
       price += p.price * p.quantity;
-    })
+    });
     let discount = this.form.value.returnDiscount;
     return price * (100 - discount) / 100;
   }
@@ -99,8 +139,25 @@ export class InvoiceComponent implements OnInit {
     }
   }
 
+  saveProducts() {
+
+  }
+
   onSubmit() {
     this.value = this.form.value as Info;
+    let number = this.value.number + 1;
+    // this.firestoreService.getInvoiceCounterCollection(ref => ref.where('provider', '==', this.value.provider)).get()
+    //   .subscribe(sn => {
+    //     sn.docs[0].ref.update({
+    //       count: number
+    //     }).then();
+    //   });
+  }
+
+  onCancel() {
+    this.hasReturn = false;
+    this.initializeForm();
+    this.setCount();
   }
 
 }
