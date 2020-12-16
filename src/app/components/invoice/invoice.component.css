@@ -17,6 +17,10 @@ p {
   margin: 0;
 }
 
+mat-option {
+  width: 100%;
+}
+
 .center {
   display: flex;
   justify-content: center;
